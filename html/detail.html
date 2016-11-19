@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>king's blog</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="/css/common.css">
+    <style type="text/css">
+        h1 {
+            color: #555;
+        }
+        .author-icon:before {
+            content: '\f007';
+        }
+        .time-icon:before {
+            content: '\f017';
+        }
+        .artical-header {
+            padding: 10px 20px;
+            background-color: #F7F7F7;
+        }
+        .artical-info span {
+            margin-right: 10px;
+            color: #999;
+        }
+        .artical-info span:last-child {
+            margin-right: 0;
+        }
+        .artical-header {
+            padding:10px 20px;
+        }
+        #artical-content {
+            padding: 10px 20px;
+            background-color: #fff;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<!--header--><!--headerend-->
+<div class="content">
+    <section class="container">
+        <div class="main">
+            <div class="artical-header">
+                <h1 id="title">我的第一篇文章</h1>
+                <div class="artical-info">
+                    <span id="author"><i class="fa author-icon"></i> 123</span>
+                    <span id="publish-time"><i class="fa time-icon"></i> 2016-10-08</span>
+                </div>
+            </div>
+            <div id="artical-content">
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+<script type="text/javascript" src="/js/common.js" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+    var uid = king.queryString('uid');
+    var title = document.getElementById('title');
+    var author = document.getElementById('author');
+    var publish_time = document.getElementById('publish-time');
+    var artical_content = document.getElementById('artical-content');
+    xhr.ajax({
+        type: 'get',
+        url: '/api/getBlogDetail',
+        data: {
+            'uid': uid
+        },
+        dataType: 'json',
+        success: function(data) {
+            author.lastChild.textContent = ' ' + data.user_name;
+            data = data.data;
+            title.innerHTML = '';
+            title.append(document.createTextNode(decodeURIComponent(data.title)));
+            publish_time.lastChild.textContent = ' ' + time.toTime(new Date(data.publish_time)*1).full;
+            artical_content.innerHTML = decodeURIComponent(data.content);
+        }
+    })
+</script>
+</html>

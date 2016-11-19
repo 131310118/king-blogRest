@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>king's blog</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/common.css">
+    <style type="text/css">
+        input {
+            width:50%;
+        }
+        .checkCircle-icon {
+            width: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        .checkCircle-icon:before {
+            content: '\f058'
+        }
+    </style>
+</head>
+<body>
+<!--header--><!--headerend-->
+<div class="content">
+    <div class="container">
+        <div class="main">
+            <div class="lh30">
+                <label for="username" class="form-left">用户名:</label><input type="text" id="username"><i class="fa checkCircle-icon hide"></i>
+            </div>
+            <div class="lh30">
+                <label for="password" class="form-left">密码:</label><input type="password" id="password">
+            </div>
+            <div class="lh30">
+                <span class="form-left"></span><a href="javascript:void(0);" title="注册" class="registed btn">注册</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/js/webtoolkit.md5.js"></script>
+<script type="text/javascript" src="/js/common.js"></script>
+<script type="text/javascript">
+    /*var registed = document.getElementsByClassName('registed')[0];
+     registed.addEventListener('click', function() {
+     var username = document.getElementById('username').value;
+     var password = document.getElementById('password').value;
+     var data = 'username='+encodeURIComponent(username)+'&password='+MD5(encodeURIComponent(password));
+     var xhr = new XMLHttpRequest();
+     xhr.open('post', '/registed', true);
+     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+     xhr.send(data);
+     });*/
+
+    var st = {};
+
+    var check = document.getElementsByClassName('checkCircle-icon')[0];
+    var username = document.getElementById('username');
+    username.onblur = function() {
+        xhr.ajax({
+            url: '/api/checkUser',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                user_name: username.value
+            },
+            success: function(data) {
+                if(data && data.data.status) {
+                    st.userStatus = true;
+                    check.setAttribute("class", "fa checkCircle-icon");
+                } else {
+                    st.userStatus = false;
+                    check.setAttribute("class", "fa checkCircle-icon hide");
+                }
+            }
+        })
+    };
+
+    var registed = document.getElementsByClassName('registed')[0];
+    registed.addEventListener('click', function() {
+        if(!st.userStatus) {
+            return;
+        }
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        xhr.ajax({
+            url: '/api/registed',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                user_name: encodeURIComponent(username),
+                user_password: MD5(encodeURIComponent(password))
+            },
+            success: function(data) {
+                if(data && data.status) {
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

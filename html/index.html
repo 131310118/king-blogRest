@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>king's blog</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body data-on="home">
+<!--header--><!--headerend-->
+<div class="content">
+    <div class="container" id="articals">
+    </div>
+</div>
+</body>
+<!--script-select_on--><!--script-select_onend-->
+<script type="text/javascript" src="/js/common.js" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+    xhr.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: '/api/getBlogs',
+        data: {
+            uid: king.queryString('uid') || window.id,
+            page: 1
+        },
+        success: function(data) {
+            var articals = document.getElementById('articals');
+            var str = '';
+            for(var item in data.data) {
+                var href =  "/html/detail.html?uid=" + data.data[item]["_id"];
+                var artical = king.tag('article', 'article');
+                artical.append('div', {
+                    className: 'article-meta',
+                    innerHTML: ' <a href="' + href + '" class="article-date">\
+                                <time>' + time.toTime(new Date(data.data[item].publish_time)*1).full + '</time>\
+                                </a>'
+                });
+                var inner = artical.append('div', 'article-inner');
+                inner.append('header', 'article-header').append('h1').append('a', {
+                    className: 'article-title',
+                    href: href
+                }).appendChild(document.createTextNode(decodeURIComponent(data.data[item].title)));
+                var entry = inner.append('div', 'article-entry');
+                if(data.data[item].imgs && data.data[item].imgs.length) {
+                    if(data.data[item].imgs.length > 1 && data.data[item].imgs instanceof Array) {
+                        for(var i = 0; i < data.data[item].imgs.length && i < 3; i++) {
+                            str += '<a class="article-block" href="' + href + '">\
+                                    <img alt="' + data.data[item].title + '" src="' + data.data[item].imgs[i] + '">\
+                                </a>';
+                        }
+                        str += '</div>';
+                        entry.append('div', {
+                            className: "article-imgs",
+                            innerHTML: str
+                        })
+                    } else {
+                        str += '<a class="artical-img" href="' + href + '">\
+                                <img alt="' + data.data[item].title + '" src="' + data.data[item].imgs + '">\
+                                </a>';
+                        entry.append('div', {
+                            className: "article-img",
+                            innerHTML: str
+                        })
+                    }
+                }
+                entry.append('div', {
+                    innerHTML: decodeURIComponent(data.data[item].summary)
+                });
+                entry.append('p', {
+                    className: 'article-more-link',
+                    innerHTML: '<a href="' + href + '">Read More</a>'
+                });
+                inner.append('footer', {
+                    className: 'article-footer',
+                    innerHTML: '<span class="author"><i class="fa author-icon"></i> ' + data.user_name + '</span>'
+                });
+                articals.appendChild(artical);
+            }
+        },
+        error: function() {
+            console.log(0);
+        }
+    });
+</script>
+</html>

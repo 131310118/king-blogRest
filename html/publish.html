@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>king's blog</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="/css/common.css" charset="utf-8">
+    <link type="text/css" rel="stylesheet" href="/css/editor.css" charset="utf-8">
+    <link type="text/css" rel="stylesheet" href="/css/publish.css" charset="utf-8">
+</head>
+<body data-on="home">
+<!--header--><!--headerend-->
+<div class="content">
+    <section class="container">
+        <div class="main">
+            <h1>发布笔记</h1>
+            <section class="blog">
+                <h3><span class="required">*</span>笔记标题</h3>
+                <input type="text" id="title">
+                <h3><span class="required">*</span>笔记正文</h3>
+                <!--editor--><!--editorend-->
+                <h3><span class="required">*</span>分类<a id="classifyControl" href="javascript:void(0);">管理</a></h3>
+                <div class="drop-list">
+                    <p id="classify" title="未分组">未分组</p>
+                    <i class="fa down-icon"></i>
+                    <div class="input"></div>
+                    <ul class="drop-box">
+                        <li title="未分组" class="on">未分组</li>
+                    </ul>
+                </div>
+            </section>
+            <div class="blog_controls">
+                <a class="save btn" href="javascript:void(0);">保存笔记</a>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+<!--script-select_on--><!--script-select_onend-->
+<script type="text/javascript" src="/js/editor.js"></script>
+<script type="text/javascript" src="/js/common.js"></script>
+<script type="text/javascript">
+    var drop = document.getElementsByClassName('drop-box')[0];
+    var classify = document.getElementById('classify');
+    var classifyControl = document.getElementById('classifyControl');
+    var save = document.getElementsByClassName('save')[0];
+    var author = cookie.getCookie('AUTH');
+    var classifyWin = win.baseWin({// 创建分类
+        title: "分类管理",
+        content: createclassifyWin(),
+        footer: popLinkFooter({
+            confirm: '确定',
+            callback: {
+                confirm: function () {
+                    classifyWin.hide();
+                }
+            }
+        })
+    });
+    var main = document.getElementsByClassName('main')[0];
+    classifyControl.onclick = function() {
+        classifyWin.show();
+    };
+
+    //下拉框
+    document.getElementsByClassName('drop-list')[0].onclick = function() {
+        if(drop.style.display != 'block') {
+            drop.style.display = 'block';
+        } else {
+            drop.style.display = 'none';
+        }
+    };
+    drop.addEventListener('click', function(e) {
+        event.stopPropagation();
+        drop.style.display = 'none';
+        classify.innerText = e.target.innerHTML;
+    });
+
+    main.addEventListener('keydown', function(e) {
+        e = window.event || e;
+        if(e.keyCode == 13 || e.keyCode == 108) {
+            login.click();
+        }
+    });
+
+    //保存
+    save.onclick = function() {
+        if(!author) {
+            return;
+        }
+
+        var content = document.getElementById('kEMainContent');
+        var submitCon = content.cloneNode();
+
+        filterClone(submitCon, content);
+
+        var images = submitCon.getElementsByTagName('img');
+        var imgs = [];
+        var node = document.createElement('div');
+        node.appendChild(getSummary(submitCon, 300));
+
+        for(var i = 0; i < 3 && i < images.length; i++) {
+            imgs[i] = images[i].getAttribute('src');
+        }
+        xhr.ajax({
+            type: 'post',
+            data: {
+                "title": encodeURIComponent(document.getElementById('title').value),
+                "content": encodeURIComponent(submitCon.innerHTML),
+                "imgs[]": imgs,
+                "summary": encodeURIComponent(node.innerHTML),
+                "classify": classify.innerText == '未分组'?"":classify.innerText
+            },
+            url: '/api/publish',
+            dataType: 'json',
+            header: {
+                Auth: author
+            },
+            success: function(data) {
+                if(data.data.uid) {
+                    window.location.href = '/html/index.html?uid=' + data.data.uid;
+                }
+            },
+            error: function() {
+                console.log('保存失败');
+            }
+        })
+    };
+
+    //弹出框
+    function popLinkFooter(option) {// 重写弹出框footer部分
+        var footer = document.createDocumentFragment();
+        if (option.confirm) {
+            var confirm = footer.appendChild(king.tag("button", {
+                className: "btn btn-primary",
+                innerHTML: option.confirm
+            }));
+            confirm.onclick = function () {
+                if (option.callback.confirm() !== false) {
+                    classifyWin.hide();
+                }
+            };
+        }
+        if (option.cancel) {
+            var cancel = footer.appendChild(king.tag("button", {
+                className: "btn btn-default",
+                innerHTML: option.cancel
+            }));
+            cancel.onclick = function () {
+                if (option.callback.cancel() !== false) {
+                    classifyWin.hide();
+                }
+            };
+        }
+        return footer;
+    }
+    function createclassifyWin()  {// 创建分类弹出框
+        var group = king.tag('div', 'pop-group');
+        group.append('div', 'form-group');
+        var category = group.append('div', {
+            id: 'category',
+            className: 'category'
+        });
+        category.input = category.append('input', {
+            type: 'text',
+            placeholder: '最多可输入14个中文字符',
+            name: 'input',
+            className: 'input-control col-sm-5',
+            id: 'input',
+            maxLength: '14'
+        });
+        var btn = category.append('div', 'col-sm-2').append('span', {
+            className: 'btn btn-default',
+            innerHTML: '创建分类'
+        });
+        // 创建分类
+        btn.onclick = function (e) {
+            event.preventDefault();
+            var val = category.input.value.trim();
+            if (val == '') {
+                category.input.select();
+                return false;
+            }
+            if(!/^[\u4e00-\u9fa5A-Za-z0-9]{1,14}$/gi.test(category.input.value)){
+                tips.show({text: '请用中文、英文或数字'});
+                category.input.select();
+                return false;
+            }
+
+            xhr.ajax({
+                url: '/api/createClassify',
+                type: 'POST',
+                data: {name: val},
+                header: {
+                    Auth: author
+                },
+                success: function (data) {
+                    // 弹出框添加分类
+                    createclassifyWinItem(category.input.value);
+                    tags.appendChild(king.tag('li', {
+                        title: val,
+                        value: val,
+                        innerHTML: val
+                    }));
+
+                    category.input.value = '';
+                },
+                error: function (xhr) {
+                    tips.show({text: xhr.responseJSON.log});
+                }
+            });
+        };
+
+        category.append('span', {
+            className: 'col-sm-5',
+            innerHTML: '请用中文、英文或数字。'
+        });
+
+        var categoryList = group.append('div', 'categoryList');
+        categoryList = categoryList.append('ul', {
+            id: 'categoryList',
+            className: 'clearfix'
+        });
+        xhr.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: '/api/getClassify',
+            header: {
+                Auth: author
+            },
+            success: function(data) {
+                var tags = document.getElementsByClassName('drop-box')[0];
+                data = data.data;
+                if(data.tags.length) {
+                    data.tags.forEach(function(item) {
+                        var ele = king.tag('li');
+                        ele.append('span', {
+                            className: 'htit',
+                            title: item,
+                            innerHTML: item
+                        });
+                        categoryList.appendChild(ele);
+                        tags.appendChild(king.tag('li', {
+                            title: item,
+                            value: item,
+                            innerHTML: item
+                        }));
+                    })
+                }
+            },
+            error: function() {
+            }
+        });
+        // 分页样式
+        /*categoryList.append('div', 'mgr_page').append('ul', {
+         id: 'categoryPager',
+         className: 'cl'
+         });*/
+
+        return group;
+    }
+    function createclassifyWinItem(name, editable) {// 弹出框添加分类
+        var categoryList = document.getElementById('categoryList');
+        var li = king.tag('li');
+        li.tit = li.append('span', {
+            className: 'htit',
+            title: name,
+            innerHTML: name
+        });
+        li.tit.setAttribute('contenteditable', 'false');
+        li.tit.onblur = function () {
+            if(this.innerHTML.trim().length > 14){
+                tips.show({text: '最多可输入14个中文字符'});
+                this.focus();
+                return false;
+            }
+            if(!/^[\u4e00-\u9fa5A-Za-z0-9]{1,14}$/gi.test(this.innerHTML)){
+                tips.show({text: '请用中文、英文或数字'});
+                this.focus();
+                return false;
+            }
+
+            // 修改分类名称
+            if (this.bool) {
+                this.bool = false;
+                return false
+            }
+           /* xhr.ajax({
+                url: '/i/hack/blogCatalog/' + this.id + '/edit',
+                type: 'PATCH',
+                data: {name: this.innerHTML},
+                success: function (data) {
+
+                },
+                error: function (xhr) {
+                    tips.show({text: xhr.responseJSON.err_msg});
+                },
+                complete: function (xhr) {
+                    closeEdit();
+                }
+            });*/
+        };
+        li.tit.onkeyup = function (e) {// 设置ESC按钮
+            if (e.keyCode == 27){
+                var categoryList = document.getElementsByClassName('categoryList')[0];
+                this.innerHTML = categoryList.replace;
+                categoryList.replace = '';
+
+                closeEdit(categoryList);
+
+                this.bool = true;
+                this.blur();
+            }
+        };
+
+        var control = li.append('span', 'control');
+        if(editable != 0) {
+            var edit = control.append('a', {
+                className: 'edit',
+                href: 'javascript: void(0);',
+                innerHTML: '[编辑]'
+            });
+            // 编辑分类
+            edit.onclick = function (e) {
+                event.preventDefault();
+                this.parentNode.parentNode.tit.setAttribute('contenteditable', 'true');
+                this.parentNode.parentNode.tit.focus();
+                this.parentNode.parentNode.className = 'on';
+                categoryList.className += ' active';
+
+                // 初始值
+                categoryList.replace = this.parentNode.parentNode.tit.innerHTML;
+                // 全选不行？？？
+            };
+        }
+        var del = control.append('a', {
+            className: 'del',
+            href: 'javascript: void(0);',
+            innerHTML: '[删除]'
+        });
+        // 删除分类
+        del.onclick = function (e) {
+            categoryList.deleteNode = this.parentNode.parentNode;
+        };
+        categoryList.appendChild(li);
+    }
+    function closeEdit(categoryList) {// 取消分类修改　||　完成分类修改
+        categoryList.className = 'clearfix';
+        categoryList.removeAttribute('class');
+    }
+
+    function filterClone(des, source) {
+        var filter = {
+            img: ['alt', 'title', 'src']
+        };
+        var node = source.firstChild;
+        while(node) {
+            if(node.nodeName != '#text') {
+                var n = document.createElement(node.nodeName);
+                if(node.style.length) {
+                    for(var i = 0; i < node.style.length; i++) {
+                        n.style[node.style[i]] = node.style[node.style[i]];
+                    }
+                }
+                switch(node.nodeName) {
+                    case 'IMG':
+                        for(var attribute in filter['img']) {
+                            var value = node.getAttribute(filter['img'][attribute]);
+                            if(value != null) {
+                                n.setAttribute(filter['img'][attribute], value);
+                            }
+                        }
+                        break;
+                }
+                des.appendChild(n);
+                filterClone(n, node);
+            } else {
+                des.appendChild(document.createTextNode(node.nodeValue));
+            }
+            node = node.nextSibling;
+        }
+    }
+    function getSummary(node, length) {
+        if(length == 0) {
+            return ;
+        }
+        if(node.innerText.length <= length) {
+            return node;
+        } else {
+            var newNode = document.createDocumentFragment();
+            var len = 0;
+            var l = 0;
+            while(node.childNodes.length) {
+                if(node.childNodes[0].nodeType == 3) {
+                    l = node.childNodes[0].length;
+                } else {
+                    l = node.childNodes[0].innerText.length
+                }
+                if(len + l <= length) {
+                    len += l;
+                    newNode.appendChild(node.childNodes[0]);
+                } else {
+                    if(node.childNodes[0].nodeType == 3) {
+                        return newNode;
+                    } else {
+                        var newFram = document.createDocumentFragment();
+                        newFram.appendChild(getSummary(node.childNodes[0], length - len));
+                        newNode.appendChild(newFram);
+                        return newNode;
+                    }
+                }
+            }
+        }
+    }
+</script>
+</html>

@@ -1,0 +1,224 @@
+#kingEditor {
+  width: 100%;
+  border: 1px solid #d4d4d4;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  position: relative;
+}
+#kingEditor #kETools {
+  background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  background-repeat: repeat-x;
+  border-bottom: 1px solid #d4d4d4;
+  box-shadow: 0 1px 4px rgba(204, 204, 204, 0.6);
+  padding: 2px;
+}
+#kingEditor .kETool_btn {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  vertical-align: top;
+}
+#kingEditor .kETool_btn:hover {
+  border: 1px solid #dcac6c;
+  width: 20px;
+  height: 20px;
+  background-color: #fff5d4;
+}
+#kingEditor .kETool_btn.checked {
+  width: 20px;
+  height: 20px;
+  background-color: #ffe69f;
+  border: 1px solid #dcac6c;
+}
+#kingEditor .kETool_bg {
+  margin: 1px;
+  background-image: url('/img/icons.png');
+}
+#kingEditor #kETool_i {
+  background-position: -60px 0;
+}
+#kingEditor #kETool_u {
+  background-position: -140px 0;
+}
+#kingEditor #kETool_p {
+  background-position: -360px -20px;
+}
+#kingEditor #kETool_getImg {
+  background-position: -380px 0;
+  overflow:hidden;
+}
+#kingEditor #kETool_getImg input{
+  opacity:0;
+}
+#kEMain {
+	border: 1px solid #fff;
+	outline:0;
+	min-height:300px;
+}
+#kEMainContent{
+	padding: 0 10px;
+	height:100%;
+	width:100%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+#modifyImg{
+	position:absolute;
+}
+#modifyImg span{
+	width:6px;
+	height:6px;
+	position:absolute;
+	background-color: #406dd4;
+}
+#modifyImg_lt{
+	left:0;
+	top:0;
+	margin-left:-4px;
+	margin-top:-4px;
+	cursor: nw-resize;
+}
+#modifyImg_mt{
+	top:0;
+	left:50%;
+	margin-top:-4px;
+	cursor:n-resize;
+}
+#modifyImg_rt{
+	right:0;
+	top:0;
+	margin-right:-4px;
+	margin-top:-4px;
+	cursor:ne-resize;
+}
+#modifyImg_lm{
+	left:0;
+	top:50%;
+	margin-left:-4px;
+	cursor:w-resize;
+}
+#modifyImg_rm{
+	right:0;
+	top:50%;
+	margin-right:-4px;
+	cursor:e-resize;
+}
+#modifyImg_lb{
+	bottom:0;
+	left:0;
+	margin-left:-4px;
+	margin-bottom:-4px;
+	cursor:sw-resize;
+}
+#modifyImg_mb{
+	bottom:0;
+	left:50%;
+	margin-bottom:-4px;
+	cursor:s-resize;
+}
+#modifyImg_rb{
+	bottom:0;
+	right:0;
+	margin-right:-4px;
+	margin-bottom:-4px;
+	cursor:se-resize;
+}
+#focusImg{
+	position:absolute;
+	display:none;
+	left:0;
+	top:0;
+	right:0;
+	bottom:0;
+}
+#kETool_l{
+	background-position: -460px 0px;
+}
+#kETool_c{
+	background-position: -420px 0px;
+}
+#kETool_r{
+	background-position: -480px 0px;
+}
+#kETool_j{
+	background-position: -440px 0px;
+}
+#kETool_LHL{
+	background-position: -725px -40px;
+	height: 20px;
+    width: 20px;
+    float: left;
+}
+#kingEditor #kETool_LH{
+	width:36px;
+	position:relative;
+}
+#kingEditor #kETool_LH:hover {
+    width: 34px;
+}
+#kETool_LH .kETool_down{
+	background-position: -741px 0;
+	float: left;
+    width: 9px;
+    height: 20px;
+}
+#kingEditor #kETool_LH:hover .kETool_down {
+    border-left: 1px solid #dcac6c;
+}
+#kETool_LH .kETool_LHDown{
+	position: absolute;
+    top: 20px;
+    left: 12px;
+    border: 1px solid #f3f3f3;
+    padding-left: 30px;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0px 1px 3px #ab9b9b;
+    min-width: 130px;
+	z-index:1;
+	display:none;
+}
+#kETool_LH .kETool_LHDown.on{
+	display:block;
+}
+#kETool_LH .kETool_LHDown .option{
+	border-left: 1px solid #c3c2c2;
+    cursor: pointer;
+	padding: 1px 5px;
+}
+#kETool_LH .kETool_LHDown .option:hover{
+	margin-left: -30px;
+    border: 1px solid #dcac6c;
+    padding: 0 0 0 35px;
+    background-color: #fff5d4;
+}
+#kETool_LH .kETool_LHDown .option.on:before{
+	display: inline-block;
+    height: 16px;
+    width: 22px;
+    background: url('/img/icons-all.gif') 6px -205px;
+    content: '';
+    position: absolute;
+    left: 4px;
+    margin-top: 1px;
+}
+#kingEditor #kETool_border{
+	background-position: -160px -40px;
+}
+#kingEditor #kETool_color {
+	width: 26px;
+}
+#kETool_FC {
+	height: 20px;
+	position: relative;
+}
+.kETool_CColor {
+	position: absolute;
+	width: 5px;
+	height: 13px;
+	right: 0;
+	top: 3px;
+	background-color: #444;
+}

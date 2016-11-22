@@ -76,13 +76,6 @@
         classify.innerText = e.target.innerHTML;
     });
 
-    main.addEventListener('keydown', function(e) {
-        e = window.event || e;
-        if(e.keyCode == 13 || e.keyCode == 108) {
-            login.click();
-        }
-    });
-
     //保存
     save.onclick = function() {
         if(!author) {
@@ -106,7 +99,7 @@
             type: 'post',
             data: {
                 "title": encodeURIComponent(document.getElementById('title').value),
-                "content": encodeURIComponent(submitCon.innerHTML),
+                "content": encodeURIComponent(node.innerHTML + submitCon.innerHTML),
                 "imgs[]": imgs,
                 "summary": encodeURIComponent(node.innerHTML),
                 "classify": classify.innerText == '未分组'?"":classify.innerText
@@ -197,7 +190,7 @@
                 success: function (data) {
                     // 弹出框添加分类
                     createclassifyWinItem(category.input.value);
-                    tags.appendChild(king.tag('li', {
+                    drop.appendChild(king.tag('li', {
                         title: val,
                         value: val,
                         innerHTML: val

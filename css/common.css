@@ -5,6 +5,11 @@
     font-weight: normal;
     font-style: normal;
 }
+.search-icon {
+    position: relative;
+    right: 20px;
+    cursor: pointer;
+}
 .search-icon:before {
     content:'\f002';
 }

@@ -5,6 +5,9 @@
 var gulp = require('gulp');
 var fs = require('fs');
 var replace = require('gulp-replace');
+var uglify = require('gulp-uglify');
+var minifycss = require('gulp-minify-css');
+var rename = require('gulp-rename');
 
 gulp.task('include', function() {
     var htmlDir = './module/';
@@ -29,4 +32,40 @@ gulp.task('include', function() {
     });
 });
 
+gulp.task('minifycss', function() {
+    var sourceDir = './_css/';
+    var destDir = './css/';
+    fs.readdir(sourceDir, function(err, files) {
+        if(err) {
+            console.log(err);
+        } else {
+            files.forEach((function(f) {
+                gulp.src(sourceDir + f)
+                    .pipe(rename({suffix: '.min'}))
+                    .pipe(minifycss())
+                    .pipe(gulp.dest(destDir))
+            }));
+        }
+    });
+});
+
+gulp.task('minifyjs', function() {
+    var sourceDir = './_js/';
+    var destDir = './js/';
+    fs.readdir(sourceDir, function(err, files) {
+        if(err) {
+            console.log(err);
+        } else {
+            files.forEach((function(f) {
+                gulp.src(sourceDir + f)
+                    .pipe(uglify())
+                    .pipe(rename({suffix: '.min'}))
+                    .pipe(gulp.dest(destDir))
+            }));
+        }
+    });
+});
+
 gulp.task('watch', function() {gulp.watch(['./module/*', './html/*'], ['include']);});
+gulp.task('minifycss', function() {gulp.watch(['./_css/*'], ['minifycss']);});
+gulp.task('minifyjs', function() {gulp.watch(['./_js/*'], [ 'minifyjs']);});

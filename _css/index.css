@@ -58,6 +58,7 @@ a.article-title:hover {
     color: #258fb8;
 }
 .article-entry {
+    word-break: break-all;
     color: #555;
     padding: 0 20px;
 }
